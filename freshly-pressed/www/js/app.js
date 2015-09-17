@@ -1,9 +1,20 @@
 var App = angular.module("App", ["ionic"]);
 
-App.controller("AppCtrl", ["$scope", "$log", "$ionicPopup", "$timeout", AppCtrl]);
+App.service("FreshlyPressed", ["$http", "$log", FreshlyPressed]);
 
-function AppCtrl ($scope, $log, $ionicPopup, $timeout) {
+App.controller("AppCtrl", ["$scope", "FreshlyPressed", "$log", "$ionicPopup", "$timeout", AppCtrl]);
+
+function AppCtrl ($scope, $log, FreshlyPressed, $ionicPopup, $timeout) {
 	$scope.refresh = function () {
-        alert("Button pressed!");
+        FreshlyPressed.getBlogs();
+	}
+}
+
+function FreshlyPressed ($http, $log) {
+	this.getBlogs = function() {
+		$http.jsonp("https://public-api.wordpress.com/rest/v1.1/freshly-pressed?callback=JSON_CALLBACK");
+		  .success(function (result) {
+		  	$log.info(JSON.stringify(result.posts));
+		  });
 	};
 }
